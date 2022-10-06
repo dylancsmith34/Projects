@@ -1,0 +1,85 @@
+-- INCE 17
+-- Dylan Smith
+
+drop table STUDENT cascade constraints;
+drop table CLUB CASCADE CONSTRAINTS;
+drop table C_JOIN cascade constraints;
+
+create table STUDENT (
+    SID     number(2)   primary key,
+    name    varchar2(50),
+    major   varchar2(15)
+);
+
+create table C_JOIN (
+    semester    varchar2(10),
+    joined_date date,
+    sid         number(2),
+    clubID      number(3),
+    primary key(SID, clubID)
+--    foreign key (SID) references STUDENT(SID)
+);
+
+create table CLUB (
+    clubID  number(3),
+    name    varchar2(50),
+    primary key(clubID)
+);
+
+alter table C_JOIN add (
+    foreign key (clubID) references CLUB(clubID)
+);
+
+
+insert into STUDENT values (11, 'James Smith', 'IT');
+insert into STUDENT values (12, 'Shu Liao', 'CS');
+insert into STUDENT values (13, 'Josh Hesse', 'CS');
+
+select * from STUDENT;
+
+insert into CLUB values (222, 'Tennis');
+insert into CLUB values (333, 'Security');
+insert into CLUB values (444, 'AI');
+
+select * from CLUB;
+
+insert into C_JOIN values ('Spring', '14-APRIL-21', 12, 222);
+insert into C_JOIN values ('Fall', '20-OCT-20', 12, 444);
+insert into C_JOIN values ('Summer', '29-AUG-19', 13, 444);
+
+select * from C_JOIN;
+
+
+--insert into C_JOIN values ('Spring', '
+
+--- 1. do natural join between STUDENT and 
+select *
+from STUDENT natural join C_JOIN;
+
+select *
+from STUDENT join C_JOIN
+using (sid);
+
+-- 2. retrieve sid, name, and clubid after natural join between STUDENT and C_JOIN
+select sid, name, clubid
+from STUDENT natural join C_JOIN;
+
+-- 3. do inner join between STUDENT and C_JOIN
+select *
+from STUDENT join C_JOIN
+on (student.sid = c_join.sid);
+
+select *
+from STUDENT, C_JOIN
+where student.sid = c_join.sid;
+
+-- 4. do natural join between STUDENT and CLUB
+--this is not meaningul because there is no referential integrity constraint between STUDENT and CLUB
+--this should not be used.
+select *
+from STUDENT natural join CLUB;
+
+-- 5. retrieve students' clubname(s) that Shu Liao joined.
+select club.name
+from STUDENT, C_JOIN, CLUB
+where student.sid = c_join.sid and C_join.clubid = club.clubid and student.name = 'Shu Liao';
